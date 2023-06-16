@@ -23,17 +23,19 @@ class Program
 
         Dictionary<string, int> commentCount = new Dictionary<string, int>();
         Console.WriteLine("How many comments each user left:");
-        context.BlogComments.ToList().ForEach(x =>
-        {
-            if (commentCount.ContainsKey(x.UserName))
+        context.BlogComments
+            .ToList()
+            .ForEach(x =>
             {
-                commentCount[x.UserName] += 1;
-            }
-            else
-            {
-                commentCount[x.UserName] = 1;
-            }
-        });
+                if (commentCount.ContainsKey(x.UserName))
+                {
+                    commentCount[x.UserName] += 1;
+                }
+                else
+                {
+                    commentCount[x.UserName] = 1;
+                }
+            });
         Console.WriteLine(JsonSerializer.Serialize(commentCount));
 
         //ToDo: write a query and dump the data to console
@@ -44,20 +46,20 @@ class Program
 
         Console.WriteLine("Posts ordered by date of last comment. Result should include text of last comment:");
         var postsWithLastComment = context.BlogPosts
-         .Select(x => new
-         {
-             PostTitle = x.Title,
-             LastComment = x.Comments.OrderByDescending(comment => comment.CreatedDate)
-                                       .FirstOrDefault()
-         })
-         .OrderByDescending(item => item.LastComment.CreatedDate)
-         .Select(c => new
-         {
-             PostTitle = c.PostTitle,
-             LastCommentDate = c.LastComment.CreatedDate,
-             LastCommentText = c.LastComment.Text
-         })
-     .ToList();
+             .Select(x => new
+             {
+                 PostTitle = x.Title,
+                 LastComment = x.Comments.OrderByDescending(comment => comment.CreatedDate)
+                                           .FirstOrDefault()
+             })
+             .OrderByDescending(item => item.LastComment.CreatedDate)
+             .Select(c => new
+             {
+                 PostTitle = c.PostTitle,
+                 LastCommentDate = c.LastComment.CreatedDate,
+                 LastCommentText = c.LastComment.Text
+             })
+         .ToList();
         Console.WriteLine(JsonSerializer.Serialize(postsWithLastComment));
         //ToDo: write a query and dump the data to console
         // Expected result (format could be different, e.g. object serialized to JSON is ok):
